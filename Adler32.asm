@@ -5,10 +5,9 @@
 
 
 .data
-	stringa:	.asciiz "Wikipedia"	#grazie a .asciiz la stringa termina automaticamente con 'null'
 	str0: .asciiz "*****Calcolatore di Checksum (Codifica Adler32)*****\n"
 	str1: .asciiz "Inserisci una stringa di testo:\n"
-	str2: .asciiz "Il valore di Checksum di questa stringa ï¿½: 0x"
+	str2: .asciiz "Il valore di Checksum di questa stringa è: 0x"
 	
 .text
 #__start:
@@ -65,7 +64,7 @@ modulo:
 	
 calcolo_resto:
 
-	li $t0, 65521		#65521 ï¿½ il maggiore numero primo contenuto in 32 bit 
+	li $t0, 65521		#65521 è il maggiore numero primo contenuto in 32 bit 
 	div $t1, $a0, $t0	#mette il risultato della divisione (intero) in $t1
 	mul $t2, $t0, $t1	#mette il prodotto tra il divisore e il risultato in $t2
 	sub $v0, $a0, $t2	#mette il resto in $v0

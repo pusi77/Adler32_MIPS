@@ -23,7 +23,7 @@ __start:
 loop: 
 ###Carica un carattere della stringa letta alla volta e valuta se la stringa è conclusa
 
-	lb $t1, 0($t0)		#carica un carattere della stringa letta alla posizione $t1
+	lbu $t1, 0($t0)		#carica un carattere della stringa letta alla posizione $t1
 	beq $t1, 0xa, finish	#se il valore di $t1 corrisponde a 'Invio' in ascii salta a finish
 	beq $t1, $zero, finish	#se il valore di $t1 corrisponde a 'null' in ascii salta a finish
 	add $t2, $t2, $t1	#SommaA = SommaA + carattere ascii

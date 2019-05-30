@@ -33,3 +33,11 @@ Output = 0x11E6 << 16 + 0x398 = 0x11E60398
 ```
 
 
+# Siti Utili
+Per controllare i risultati e generare le stringhe di test sono comodi i seguenti siti:
+
+[Generatore stringhe](https://www.browserling.com/tools/random-string)
+
+[Verifica lunghezza stringhe](https://www.charactercountonline.com/)
+
+[Calcolo Adler32](https://md5calc.com/hash)

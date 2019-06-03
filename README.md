@@ -1,10 +1,11 @@
 # Adler32 MIPS
-Implementazione dell'algoritmo Adler-32 in Assembly MIPS
+Implementazione dell'algoritmo Adler-32 in Assembly MIPS realizzata da @And98 e @pusi77 per un progetto relativo al corso universitario di Calcolatori Elettronici.
 
-# Adler-32
+# L'algoritmo Adler-32
 ## Introduzione
 L'Adler-32 è un algoritmo per il calcolo del *checksum* (o somma di controllo) sviluppato da Mark Adler nel 1995. [Qui](https://en.wikipedia.org/wiki/Adler-32) si possono trovare maggiori informazioni.
 ## Algoritmo
+Come si può leggere [qui](https://software.intel.com/en-us/articles/fast-computation-of-adler32-checksums) ci sono differenti metodi di implementazione differenti per il momento in cui viene eseguito l'operatore modulo della divisione. I principali sono il calcolo del modulo a ogni iterazione (opzione più lenta e meno efficiente, ma più sicura), oppure il calcolo del modulo una volta calcolate le somme finali (metodo migliore per le prestazioni, ma vulnerabile all'overflow in caso una delle due somme diventi troppo grande in modulo). La nostra è un'implementazione ibrida come si potrà evincere poco più in basso nel paragrafo chiamato **Funzionamento**.<br/>
 Data una stringa di byte D con lunghezza n, data A la somma del valore Ascii di ogni byte più 1 e B la somma dei valori di A per ogni passaggio:
 ```
 A = 1 + D1 + D2 + ... + Dn (mod 65521)
@@ -12,7 +13,7 @@ A = 1 + D1 + D2 + ... + Dn (mod 65521)
 B = (1 + D1) + (1 + D1 + D2) + ... + (1 + D1 + D2 + ... + Dn) (mod 65521)
   = n×D1 + (n−1)×D2 + (n−2)×D3 + ... + Dn + n (mod 65521)
 
-Adler-32(D) = B × 65536 + A
+Adler-32(D) = B * 65536 + A
 ```
 ### Esempio:
 | Character | ASCII Code | A | B |
@@ -31,6 +32,17 @@ A =  920 =  0x398  (base 16)
 B = 4582 = 0x11E6
 Output = 0x11E6 << 16 + 0x398 = 0x11E60398
 ```
+
+# Il programma
+## Nota
+N.B. : è possibile utilizzare correttamente il programma unicamente su Mars a causa dell'utilizzo della syscall 34 per la stampa di un intero in formato esadecimale. Per l'esecuzione su altri simulatori che non supportano la syscall in questione è possibile sostituire il codice chiamata con quello per la stampa di un numero decimale (1).
+## Funzionamento 
+All'avvio il programma richiede una stringa composta da caratteri in codifica ASCII. La stringa deve essere inserita mediante la console I/O e deve essere terminata con Invio, fatta eccezione nel caso si raggiunga la capacità massima della memoria a disposizione, in tal caso la stringa viene troncata automaticamente (la lunghezza massima della stringa dovrebbe essere 1.878.982.611 caratteri, ma il dato, a causa della sua dimensione, non è stato ancora verificato sperimentalmente).<br/>
+Caricata in memoria la stringa ne viene letto un carattere per volta tramite un loop, il valore di ogni carattere viene quindi utilizzato secondo l'algoritmo, sommandolo ad A e sommando la A trovata a B. Ad ogni iterazione del loop viene controllato che il carattere letto non sia un carattere di fine stringa, ovvero *null* oppure */n*. In seguito vengono aggiornate le somme di A e B, controllando che il valore di B non superi il valore *0x0fff0000* (questo valore non è frutto di calcoli, ma è stato scelto arbitrariamente, di conseguenza può essere migliorato riducendo calcoli supreflui), in tal caso viene calcolato il modulo della divisione per il numero primo a 16 bit maggiore possibile, ovvero *65521*, e viene aggiornato B con il resto trovato per ridurne la dimensione.<br/>
+Il programma si arresta a stringa finita stampando il valore esadecimale ottenuto dall'algoritmo.
+
+
+
 
 
 # Siti Utili

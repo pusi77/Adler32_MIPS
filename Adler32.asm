@@ -1,7 +1,8 @@
 #TODO:
-#1) Scoprire il limite massimo di caratteri per la stringa inserita, dovrebbe essere 1.878.982.611 (0x6ffeffd3) in quanto partiamo dall'indirizzo 0x1001002c
+#1) Scoprire il limite massimo di caratteri per la stringa inserita (e modificare il README di conseguenza), dovrebbe essere 1.878.982.611 (0x6ffeffd3) in quanto partiamo dall'indirizzo 0x1001002c
 #   e abbiamo a disposizione fino a 0x80000000 (?). Fatto sta che la stringa supererebbe il GB e è difficile generarla e maneggiarla
 #2) Utilizzare di più i registri $s, ci sono, usiamoli
+#) Inserire macro per evitare magic numbers?
 
 
 .data
@@ -84,11 +85,12 @@ prerest_calc:
 rest_calc:
 ###Calcola il resto della divisione tra un numero passato come argomento e 65521
 
-	li $t6, 65521		#65521 è il maggiore numero primo contenuto in 32 bit 
+	li $t6, 65521		#65521 è il maggiore numero primo contenuto in 16 bit 
 	div $t7, $a0, $t6	#mette il risultato della divisione (intero) in $t1
 	mul $t8, $t6, $t7	#mette il prodotto tra il divisore e il risultato in $t2
 	sub $v0, $a0, $t8	#mette il resto in $v0
 	jr $ra
 	
 exit:
-###Esce dal programma
+	addi $v0, $zero, 10	#il codice chiamata 10 corrisponde all'uscita dal programma
+	syscall

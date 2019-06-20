@@ -1,8 +1,8 @@
 #TODO:
-#1) Scoprire il limite massimo di caratteri per la stringa inserita (e modificare il README di conseguenza), dovrebbe essere 1.878.982.611 (0x6ffeffd3) in quanto partiamo dall'indirizzo 0x1001002c
-#   e abbiamo a disposizione fino a 0x80000000 (?). Fatto sta che la stringa supererebbe il GB e è difficile generarla e maneggiarla
+#1) Modificare il README, il numero di caratteri è 196563 in quanto partiamo dall'indirizzo 0x1001002c
+#   e abbiamo a disposizione fino a 0x1003ffff
 #2) Utilizzare di più i registri $s, ci sono, usiamoli
-#) Inserire macro per evitare magic numbers?
+#) Inserire macro per evitare magic numbers? (Three....is the magic numba!)
 
 
 .data
@@ -18,7 +18,7 @@ __start:
 	
 	li $v0, 8		#il codice chiamata 8 corrisponde alla lettura di una stringa
 	li $a0, 0x1001002c	#$a0 = indirizzo base della stringa letta, verrà sovrascritto str0 ma non str1 che serve dopo
-	li $a1, 0x6ffeffd3		#$a1 = lunghezza massima stringa meno 1 (in caso di riempimento viene riservato uno spazio per lo 0 ('null'))
+	li $a1, 0x1003ffff	#$a1 = lunghezza massima stringa nel .data meno 1 byte (in caso di riempimento viene riservato uno spazio per lo 0 ('null'))
 	syscall
 	
 	la $t0, ($a0)		#carica l'indirizzo della stringa letta in $t0

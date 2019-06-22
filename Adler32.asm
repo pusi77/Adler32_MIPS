@@ -1,10 +1,8 @@
 #TODO:
-#1) Modificare il README, il numero di caratteri è 196563 in quanto partiamo dall'indirizzo 0x1001002c
-#   e abbiamo a disposizione fino a 0x1003ffff. Capire anche come limitare l'hack di inserimento da
-#   copiaincolla oppure togliere il limite alla stringa
+#1)RISOLTO? Capire anche come limitare l'hack di inserimento da copiaincolla oppure togliere il limite alla stringa
 #2) Studiare come SommaB aumenta ed eventualmente inserire unsigned e capire se serve farlo anche
-#   per SommaA
-#3) Inserire macro per evitare magic numbers? (Three....is the magic numba!)
+#   per SommaA (e modificare README)
+#3) Inserire macro per evitare magic numbers? (Three....is the magic numba!(Madonna pure con Toolleeoo lo dicevi sempre -.-))
 
 
 .data
@@ -21,20 +19,21 @@ __start:
 	syscall
 	
 	li $v0, 8		#il codice chiamata 8 corrisponde alla lettura di una stringa
-	la $a0, 0x1001002c	#$a0 = indirizzo base della stringa letta, verrà sovrascritto str0 ma non str1 che serve dopo
-	li $a1, 0x1003ffff	#$a1 = lunghezza massima stringa nel .data meno 1 byte (in caso di riempimento viene riservato uno spazio per lo 0 ('null'))
+	la $a0, 0x10040000	#indirizzo base della stringa letta, comincia dall'indirizzo di "Dynamic data"
+	li $a1, 0x7fffeffa	#lunghezza massima stringa nel .data meno 1 byte (in caso di riempimento viene riservato uno spazio per lo 0 ('null'))
+				#all'indirizzo 0x7fffeffc si trova lo Stack Pointer
 	syscall
 	
 	la $s0, ($a0)		#carica l'indirizzo della stringa letta in $s0
 	li $s1, 1 		#inizializza SommaA in $s1 con il valore 1
 	li $s2, 0 		#inizializza SommaB in $s2 con il valore 0
 	
-	li $s6, 65521		#65521 è il maggiore numero primo contenuto in 16 bit, serve per resto 
-	lui $s7, 0x0fff		#carica un numero alto per il successivo confronto con SommaB, evita overflow
+	li $s6, 65521		#65521 è il maggiore numero primo contenuto in 16 bit, serve per il calcolo del resto 
+	lui $s7, 0x0fff		#MODIFICARE!!!!carica un numero alto per il successivo confronto con SommaB, evita overflow
 	
 	
 loop: 
-###Carica un carattere della stringa letta alla volta, calcola le somme, valuta se la stringa è conclusa
+###Carica un carattere della stringa letta alla volta, valuta se la stringa è conclusa, calcola le somme, e se SommaB supera $s7 ne calcola il resto 
 
 	lbu $t0, 0($s0)		#carica un carattere della stringa letta alla posizione $s0
 	beq $t0, 0xa, finish	#se il valore di $t0 corrisponde a 'Invio' in ascii salta a finish
@@ -49,9 +48,6 @@ loop:
 	jal rest_calc		#chiamata a procedura rest_calc
 	move $s2, $v0		#sovrascrive SommaB col resto dato da rest_calc
 	
-	skip:
-	addi $s0, $s0, 1	#incrementa di 1 byte l'indirizzo contenuto in $s0, passando al carattere successivo
-	j loop
 	
 finish:
 ###Esegue le operazioni finali di calcolo resto, shift e stampa del risultato
@@ -73,9 +69,21 @@ finish:
 	li $v0, 34		#il codice chiamata 34 corrisponde alla scrittura a schermo di un numero binario in esadecimale
 	move $a0, $s5
 	syscall	
+
+
 exit:	
+###Esce dal programma
+
 	addi $v0, $zero, 10	#il codice chiamata 10 corrisponde all'uscita dal programma, che termina
 	syscall
+
+
+skip:
+###In caso SommaB sia minore di $7 passa all'iterazione successiva di loop
+
+	addi $s0, $s0, 1	#incrementa di 1 byte l'indirizzo contenuto in $s0, passando al carattere successivo
+	j loop
+
 	
 rest_calc:
 ###Calcola il resto della divisione tra un numero passato come argomento e 65521
